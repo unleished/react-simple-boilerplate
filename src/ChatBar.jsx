@@ -12,15 +12,19 @@ class ChatBar extends Component {
     }
   }
 
+  nameSubmit = event => {
+      const newName = event.target.value
+      this.props.onUserUpdate(newName);
+  }
+
   render() {
-    const userName = this.props.name
     return (
       <footer className="chatbar" >
         <input
           name='user'
           className="chatbar-username"
-          placeholder="Your Name (Optional)"
-          defaultValue={userName}
+          defaultValue = {this.props.name}
+          onChange={this.nameSubmit}
           />
         <input
           onKeyPress={this.enterSubmit}
@@ -29,7 +33,7 @@ class ChatBar extends Component {
           placeholder="Type a message and hit ENTER"
           />
       </footer>
-);
+    );
   }
 }
 export default ChatBar;
