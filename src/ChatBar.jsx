@@ -9,12 +9,15 @@ class ChatBar extends Component {
 
       this.props.onNewMessage(content);
 
+      event.target.value = ''
+
     }
   }
 
   nameSubmit = event => {
       const newName = event.target.value
       this.props.onUserUpdate(newName);
+
   }
 
   render() {
@@ -23,8 +26,8 @@ class ChatBar extends Component {
         <input
           name='user'
           className="chatbar-username"
-          defaultValue = {this.props.name}
-          onChange={this.nameSubmit}
+          placeholder="Your Name (Optional)"
+          onBlur={this.nameSubmit}
           />
         <input
           onKeyPress={this.enterSubmit}

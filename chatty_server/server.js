@@ -10,40 +10,44 @@ const server = express()
 
 const wss = new SocketServer({ server });
 
-wss.on('connection', (ws) => {
+wss.on('connection', (client) => {
+  console.log('clients: ', wss.clients.size)
   console.log('Client connected');
 
-  ws.on('message', broadcastBack);
-
-  ws.on('close', () => console.log('Client disconnected'));
-
-
+  client.on('message', broadcastBack);
+  client.on('close', () => {
+    console.log('Client disconnected')
+  });
+  // client.send(wss.clients.size);
+  // let data = {
+  //   type: 'incomingCount',
+  //   username: "Server",
+  //   content: wss.clients.size
+  // }
+  // wss.broadcast(data)
 
 });
 
 wss.broadcast = function(data) {
-  let dataObj = JSON.parse(data);
+  let messageType = 'incomingMessage';
+  // if (data.type !== undefined) {
+  //   messageType = data.type
+  // }
   let broadMessage = {
+    type: messageType,
     id: uuidv4(),
-    username: dataObj.username ,
-    content: dataObj.content
+    username: data.username,
+    content: data.content
   }
    wss.clients.forEach(function(client){
-console.log('broadcast data: ', broadMessage);
+    console.log('broadcast data: ', broadMessage);
     client.send(JSON.stringify(broadMessage));
   });
 }
 
-
 function broadcastBack(message) {
-  console.log(`Received ${message}`)
+  // console.log(`Received ${message}`)
   let parsed = JSON.parse(message);
-
   console.log(`User ${parsed.username} said ${parsed.content}`);
-  //
-  // console.log('parsed: ', parsed)
-  //  parsed.status? //we may not need this for chatty.
-  //  parsed.timestamp = number(new Date()); // may not need for chatty
-   // wss.broadcast(JSON.stringify(parsed))
-  wss.broadcast(message);
+  wss.broadcast(parsed);
 }
