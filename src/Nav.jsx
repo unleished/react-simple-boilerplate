@@ -7,7 +7,7 @@ class Nav extends Component {
     return (
         <nav className='navbar'>
         <h1>Chatty</h1>
-        {this.props.userCount}
+        <h5 className='userCount'>{this.props.userCount} Users Online </h5>
         </nav>
     );
   }

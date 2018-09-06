@@ -9,7 +9,8 @@ class App extends Component {
     super(props);
     this.state = {
         currentUser: {name: "Anonymous"}, // optional. if currentUser is not defined, it means the user is Anonymous
-        messages: []
+        messages: [],
+        count: 0
     };
   }
 
@@ -27,7 +28,9 @@ class App extends Component {
 
 
     this.ws.onmessage = evt => {
+      console.log('evt data: ', evt.data)
       let parsed = JSON.parse(evt.data)
+    
 
       switch(parsed.type) {
         case "incomingMessage":
@@ -46,14 +49,20 @@ class App extends Component {
                 <p>{parsed.content}</p>
               </div>
             );
-
           }
           break;
+        case "incomingConnection":
+          this.setState({count: parsed.size});
+
+            console.log('parsed size: ', parsed.size)
+          break;
         default:
-          throw new Error("Unknown event type " + data.type);
+          throw new Error("Unknown event type " + parsed.type);
       }
     }
   }
+
+
     onUserUpdate = (name) => {
       const userUpdate = {
         type: 'postNotification',
@@ -80,7 +89,7 @@ class App extends Component {
     // }
     return (
       <div>
-        <Nav userCount = {this.userCount} />
+        <Nav userCount = {this.state.count} />
         <MessageList messages = {this.state.messages} newNotification = {this.notification} />
         <ChatBar {...this.state.currentUser} onNewMessage = {this.onNewMessage} onUserUpdate = {this.onUserUpdate}/>
       </div>

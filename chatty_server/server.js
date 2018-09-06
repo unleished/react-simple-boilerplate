@@ -10,44 +10,74 @@ const server = express()
 
 const wss = new SocketServer({ server });
 
+// client.send(wss.clients.size);
+
+// let clients = {
+//   type:
+//   count: wss.clients.size
+// }
+//
+// const clientConnected = (client, clientID) => {
+//   clients = {
+//     id: clientID,
+//     color: ''
+//   }
+// }
+//
+// const clientDisconnected = clientID => {
+//   // const client = clients[clientID]
+//   delete clients[clientID]
+// }
+// // wss.broadcast(data)
+
+const clientCount = () => {
+  const countMessage = {
+    type: "incomingConnection",
+    size: wss.clients.size
+  }
+  return countMessage
+}
+
+const clientColor = () => {
+  let colorOptions = ['#5C4A4A', '#4A5C4F', '#763B3B', '#647F8F']
+  const colorMessage = {
+    type: "colorSetter",
+    color: ''
+  }
+
+
+}
+
 wss.on('connection', (client) => {
-  console.log('clients: ', wss.clients.size)
+  wss.broadcast(clientCount());
+
   console.log('Client connected');
 
-  client.on('message', broadcastBack);
+  client.on('message', sendMessage);
   client.on('close', () => {
-    console.log('Client disconnected')
+    wss.broadcast(clientCount());
+
   });
-  // client.send(wss.clients.size);
-  // let data = {
-  //   type: 'incomingCount',
-  //   username: "Server",
-  //   content: wss.clients.size
-  // }
-  // wss.broadcast(data)
 
 });
 
-wss.broadcast = function(data) {
+wss.broadcast = function broadcast(data) {
+  wss.clients.forEach(function each(client) {
+    // if (client.readyState === wss.OPEN) {
+      client.send(JSON.stringify(data));
+    // }
+  });
+};
+
+sendMessage = function(data) {
+  let parsedData = JSON.parse(data)
   let messageType = 'incomingMessage';
-  // if (data.type !== undefined) {
-  //   messageType = data.type
-  // }
+
   let broadMessage = {
     type: messageType,
     id: uuidv4(),
-    username: data.username,
-    content: data.content
+    username: parsedData.username,
+    content: parsedData.content
   }
-   wss.clients.forEach(function(client){
-    console.log('broadcast data: ', broadMessage);
-    client.send(JSON.stringify(broadMessage));
-  });
-}
-
-function broadcastBack(message) {
-  // console.log(`Received ${message}`)
-  let parsed = JSON.parse(message);
-  console.log(`User ${parsed.username} said ${parsed.content}`);
-  wss.broadcast(parsed);
+  wss.broadcast(broadMessage)
 }
