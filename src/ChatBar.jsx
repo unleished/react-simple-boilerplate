@@ -3,21 +3,16 @@ import React, {Component} from 'react';
 class ChatBar extends Component {
 
   enterSubmit = event => {
-    console.log('event', event.target.value)
     if (event.key === 'Enter') {
       const content = event.target.value
-
       this.props.onNewMessage(content);
-
       event.target.value = ''
-
     }
   }
 
   nameSubmit = event => {
       const newName = event.target.value
       this.props.onUserUpdate(newName);
-
   }
 
   render() {

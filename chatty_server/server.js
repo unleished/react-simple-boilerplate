@@ -11,6 +11,7 @@ const server = express()
 
 const wss = new SocketServer({ server });
 
+// Connected users count
 const clientCount = () => {
   const countMessage = {
     type: "incomingConnection",
@@ -19,6 +20,7 @@ const clientCount = () => {
   return countMessage
 }
 
+//Random color generator
 const clientColor = () => {
   const colorMessage = {
     type: "colorSetter",
@@ -26,7 +28,7 @@ const clientColor = () => {
   }
   return colorMessage;
 }
-
+// send client count and random color generated values on connection
 wss.on('connection', (client) => {
   wss.broadcast(clientCount());
   client.send(JSON.stringify(clientColor()));
@@ -34,6 +36,7 @@ wss.on('connection', (client) => {
   console.log('Client connected');
 
   client.on('message', sendMessage);
+  //Updates client count when a client disconnects
   client.on('close', () => {
     wss.broadcast(clientCount());
   });
@@ -41,16 +44,14 @@ wss.on('connection', (client) => {
 
 wss.broadcast = function broadcast(data) {
   wss.clients.forEach(function each(client) {
-    // if (client.readyState === wss.OPEN) {
       client.send(JSON.stringify(data));
-    // }
   });
 };
 
+// message object creation to send data to client.
 sendMessage = function(data) {
   let parsedData = JSON.parse(data)
   let messageType = 'incomingMessage';
-
   let broadMessage = {
     type: messageType,
     id: uuidv4(),
