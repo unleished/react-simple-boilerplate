@@ -44,10 +44,6 @@ body {
   padding: 5px;
 }
 
-.message.system {
-  font-style: italic;
-  padding: 5px 20px;
-}
 
 .message-content,
 .message-username {
@@ -58,6 +54,12 @@ body {
 
 .message-content {
   flex: 8;
+}
+
+#messageSystem {
+  font-style: italic;
+  color: lightgrey;
+  padding: 5px 20px;
 }
 
 .message-username {
