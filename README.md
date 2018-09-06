@@ -4,6 +4,9 @@ React Boilerplate
 A minimal and light dev environment for ReactJS.
 
 ### Images
+![Chatty on load](https://github.com/unleished/react-simple-boilerplate/blob/master/build/docs/ChattyApp_onLoad.png?raw=true)
+![Chatty username change alert](https://github.com/unleished/react-simple-boilerplate/blob/master/build/docs/ChattyApp_NameChange.png?raw=true)
+![Chatty with Chats] (https://github.com/unleished/react-simple-boilerplate/blob/master/build/docs/ChattyApp_Chats.png?raw=true)
 
 ### Dependencies
 
