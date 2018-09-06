@@ -1,6 +1,7 @@
 const express = require('express');
 const SocketServer = require('ws').Server;
 const uuidv4 = require('uuid/v4');
+var randomColor = require('random-color');
 
 const PORT = 3001
 
@@ -9,26 +10,6 @@ const server = express()
   .listen(PORT, '0.0.0.0', 'localhost', () => console.log(`Listening at ${PORT}`));
 
 const wss = new SocketServer({ server });
-
-// client.send(wss.clients.size);
-
-// let clients = {
-//   type:
-//   count: wss.clients.size
-// }
-//
-// const clientConnected = (client, clientID) => {
-//   clients = {
-//     id: clientID,
-//     color: ''
-//   }
-// }
-//
-// const clientDisconnected = clientID => {
-//   // const client = clients[clientID]
-//   delete clients[clientID]
-// }
-// // wss.broadcast(data)
 
 const clientCount = () => {
   const countMessage = {
@@ -39,26 +20,23 @@ const clientCount = () => {
 }
 
 const clientColor = () => {
-  let colorOptions = ['#5C4A4A', '#4A5C4F', '#763B3B', '#647F8F']
   const colorMessage = {
     type: "colorSetter",
-    color: ''
+    color: randomColor().hexString()
   }
-
-
+  return colorMessage;
 }
 
 wss.on('connection', (client) => {
   wss.broadcast(clientCount());
+  client.send(JSON.stringify(clientColor()));
 
   console.log('Client connected');
 
   client.on('message', sendMessage);
   client.on('close', () => {
     wss.broadcast(clientCount());
-
   });
-
 });
 
 wss.broadcast = function broadcast(data) {
@@ -76,6 +54,7 @@ sendMessage = function(data) {
   let broadMessage = {
     type: messageType,
     id: uuidv4(),
+    color: parsedData.color,
     username: parsedData.username,
     content: parsedData.content
   }

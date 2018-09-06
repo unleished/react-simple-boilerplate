@@ -8,9 +8,11 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-        currentUser: {name: "Anonymous"}, // optional. if currentUser is not defined, it means the user is Anonymous
+        currentUser: {
+          name: "Anonymous"}, // optional. if currentUser is not defined, it means the user is Anonymous
         messages: [],
-        count: 0
+        count: 0,
+        color: ''
     };
   }
 
@@ -23,22 +25,21 @@ class App extends Component {
 
     this.ws.onconnection = evt => {
       console.log('onConnection: ', evt)
-
     }
-
 
     this.ws.onmessage = evt => {
       console.log('evt data: ', evt.data)
       let parsed = JSON.parse(evt.data)
-    
 
       switch(parsed.type) {
         case "incomingMessage":
           const message = {
             id: parsed.id,
+            color: parsed.color,
             username: parsed.username,
             content: parsed.content
           }
+
           this.setState({messages: [...this.state.messages, message] });
 
           break;
@@ -52,9 +53,13 @@ class App extends Component {
           }
           break;
         case "incomingConnection":
-          this.setState({count: parsed.size});
+          this.state.count = parsed.size;
 
             console.log('parsed size: ', parsed.size)
+          break;
+        case "colorSetter":
+          this.state.color = parsed.color;
+          console.log('color: ',this.state.color)
           break;
         default:
           throw new Error("Unknown event type " + parsed.type);
@@ -76,7 +81,8 @@ class App extends Component {
     onNewMessage = content => {
       const message = {
         type: "postMessage",
-        username: this.state.currentUser.name ,
+        username: this.state.currentUser.name,
+        color: this.state.color,
         content: content
       }
       this.ws.send(JSON.stringify(message));
